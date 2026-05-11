@@ -4,148 +4,162 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" />
+        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com" />
   <title>Piemonte TU Exporter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="app">
+<div class="app">
 
-    <header class="app-header">
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <header class="app-header">
+    <span class="header-icon">⬡</span>
+    <div class="header-text">
       <h1>Piemonte TU Exporter</h1>
-      <p class="subtitle">Scarica annunci di lavoro dal portale PSLP Piemonte</p>
-    </header>
+      <div class="subtitle">PSLP · API JSON · Annunci lavoro</div>
+    </div>
+    <span class="header-badge">v1.0.0</span>
+  </header>
 
-    <main class="app-body">
+  <main class="app-body">
 
-      <!-- ── Parametri di ricerca ──────────────────────────────────────── -->
-      <section class="card">
-        <h2>Parametri di ricerca</h2>
+    <!-- ── Parametri di ricerca ──────────────────────────────────────────── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="dot idle" id="statusDot"></span>
+        Parametri ricerca
+      </div>
+      <div class="section-body">
         <div class="form-grid">
 
           <div class="field">
-            <label for="idComune">Codice Comune (idComune)</label>
-            <input type="text" id="idComune" value="L219"
-                   placeholder="es. L219 per Torino" />
-            <span class="hint">Codice catastale del comune di lavoro</span>
+            <label>Codice Comune</label>
+            <input type="text" id="idComune" value="L219" placeholder="es. L219 = Torino" />
+            <span class="hint">Codice catastale Belfiore</span>
           </div>
 
           <div class="field">
-            <label for="rangeKm">Raggio km</label>
+            <label>Raggio (km)</label>
             <input type="number" id="rangeKm" value="5" min="0" max="200" />
           </div>
 
           <div class="field">
-            <label for="campoTestuale">Ricerca testuale</label>
-            <input type="text" id="campoTestuale" placeholder="Parola chiave (opzionale)" />
+            <label>Ricerca testuale</label>
+            <input type="text" id="campoTestuale" placeholder="parola chiave…" />
           </div>
 
           <div class="field">
-            <label for="recForPage">Record per pagina API</label>
+            <label>Record / pagina API</label>
             <input type="number" id="recForPage" value="100" min="10" max="500" />
           </div>
 
-          <div class="field checkbox-group">
-            <label class="checkbox-label">
-              <input type="checkbox" id="flgL68Art1" checked />
-              L.68 Art.1 (categorie protette)
-            </label>
-          </div>
-
-          <div class="field checkbox-group">
-            <label class="checkbox-label">
-              <input type="checkbox" id="flgL68Art18" />
-              L.68 Art.18
-            </label>
-          </div>
-
-          <div class="field checkbox-group">
-            <label class="checkbox-label">
-              <input type="checkbox" id="tirocinio" />
-              Tirocinio
-            </label>
+          <div class="field full-width">
+            <label>Filtri</label>
+            <div class="check-row">
+              <label class="checkbox-label" id="lbl-l68art1">
+                <input type="checkbox" id="flgL68Art1" checked /> L.68 Art.1
+              </label>
+              <label class="checkbox-label" id="lbl-l68art18">
+                <input type="checkbox" id="flgL68Art18" /> L.68 Art.18
+              </label>
+              <label class="checkbox-label" id="lbl-tirocinio">
+                <input type="checkbox" id="tirocinio" /> Tirocinio
+              </label>
+            </div>
           </div>
 
         </div>
-      </section>
+      </div>
+    </div>
 
-      <!-- ── Opzioni di export ─────────────────────────────────────────── -->
-      <section class="card">
-        <h2>Opzioni di esportazione</h2>
+    <!-- ── Export ────────────────────────────────────────────────────────── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="dot" style="background:#00d4ff;box-shadow:0 0 6px #00d4ff;animation:none"></span>
+        Output
+      </div>
+      <div class="section-body">
         <div class="form-grid">
 
           <div class="field">
             <label>Formato</label>
             <div class="radio-group">
-              <label class="radio-label">
-                <input type="radio" name="format" value="xlsx" checked /> Excel (.xlsx)
+              <label class="radio-label selected" id="lbl-xlsx" data-val="xlsx">
+                <input type="radio" name="format" value="xlsx" checked /> .xlsx
               </label>
-              <label class="radio-label">
-                <input type="radio" name="format" value="csv" /> CSV (.csv)
+              <label class="radio-label" id="lbl-csv" data-val="csv">
+                <input type="radio" name="format" value="csv" /> .csv
               </label>
             </div>
           </div>
 
-          <div class="field">
-            <label>File di destinazione</label>
+          <div class="field span2">
+            <label>Destinazione file</label>
             <div class="file-row">
-              <input type="text" id="filePath" readonly placeholder="Clicca 'Scegli file…'" />
-              <button id="btnChooseFile" class="btn btn-secondary">Scegli file…</button>
+              <input type="text" id="filePath" readonly placeholder="nessun file selezionato…" />
+              <button id="btnChooseFile" class="btn btn-file">[ scegli… ]</button>
             </div>
           </div>
 
         </div>
-      </section>
+      </div>
+    </div>
 
-      <!-- ── Impostazioni avanzate ─────────────────────────────────────── -->
-      <details class="card advanced">
-        <summary>⚙️ Impostazioni avanzate</summary>
-        <div class="form-grid" style="margin-top: 12px;">
+    <!-- ── Avanzate ───────────────────────────────────────────────────────── -->
+    <div class="section advanced" id="advancedSection">
+      <div class="section-header" id="advancedToggle">
+        <span class="dot" style="background:#f0c050;box-shadow:0 0 6px #f0c05060;animation:none"></span>
+        Impostazioni avanzate
+        <span class="chevron">▾</span>
+      </div>
+      <div class="section-body">
+        <div class="form-grid">
 
           <div class="field">
-            <label for="delay">Pausa tra richieste (ms)</label>
+            <label>Pausa tra richieste (ms)</label>
             <input type="number" id="delay" value="350" min="100" max="5000" step="50" />
-            <span class="hint">Aumenta se il server risponde con 429 Too Many Requests</span>
+            <span class="hint">Aumenta se ricevi 429 Too Many Requests</span>
           </div>
 
           <div class="field full-width">
-            <label for="cookie">Cookie manuale (opzionale)</label>
-            <input type="text" id="cookie"
-                   placeholder="Incolla qui il cookie di sessione se l'API richiede autenticazione" />
-            <span class="hint">
-              Lascia vuoto se le API sono pubbliche. Se ottieni 401/403, effettua il login
-              nel browser, copia il cookie dalla DevTools e incollalo qui.
-            </span>
+            <label>Cookie manuale (opzionale)</label>
+            <input type="text" id="cookie" placeholder="Incolla qui il cookie di sessione se l'API richiede auth…" />
+            <span class="hint">Lascia vuoto se le API sono pubbliche. Ottieni il cookie dalle DevTools del browser dopo il login.</span>
           </div>
 
         </div>
-      </details>
-
-      <!-- ── Azioni ────────────────────────────────────────────────────── -->
-      <div class="actions">
-        <button id="btnStart" class="btn btn-primary" disabled>
-          ▶ Scarica annunci
-        </button>
-        <button id="btnClear" class="btn btn-ghost">Pulisci log</button>
       </div>
+    </div>
 
-      <!-- ── Progresso ─────────────────────────────────────────────────── -->
-      <section class="card progress-section">
-        <div class="progress-bar-wrapper">
-          <div id="progressBar" class="progress-bar" style="width: 0%"></div>
+    <!-- ── Azioni ─────────────────────────────────────────────────────────── -->
+    <div class="actions">
+      <button id="btnStart" class="btn btn-primary" disabled>[ ▶ avvia download ]</button>
+      <button id="btnClear" class="btn btn-ghost">[ pulisci log ]</button>
+    </div>
+
+    <!-- ── Progresso ──────────────────────────────────────────────────────── -->
+    <div class="section">
+      <div class="progress-wrap">
+        <div class="progress-track">
+          <div class="progress-fill" id="progressBar"></div>
         </div>
-        <div id="statusText" class="status-text">Pronto.</div>
-      </section>
+        <div class="progress-pct" id="progressPct">0%</div>
+      </div>
+      <div class="status-line" id="statusText">_ pronto.</div>
+    </div>
 
-      <!-- ── Log ──────────────────────────────────────────────────────── -->
-      <section class="card log-section">
-        <h2>Log operazioni</h2>
-        <div id="logContainer" class="log-container"></div>
-      </section>
+    <!-- ── Log ───────────────────────────────────────────────────────────── -->
+    <div class="section" style="flex:1">
+      <div class="section-header">
+        <span class="dot" style="background:#58a6ff;box-shadow:0 0 6px #58a6ff60;animation:none"></span>
+        Log operazioni
+      </div>
+      <div class="log-container" id="logContainer"></div>
+    </div>
 
-    </main>
-  </div>
-
-  <script src="renderer.js"></script>
+  </main>
+</div>
+<script src="renderer.js"></script>
 </body>
 </html>
