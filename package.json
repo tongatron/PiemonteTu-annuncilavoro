@@ -1,0 +1,45 @@
+{
+  "name": "piemonte-tu-exporter",
+  "version": "1.0.0",
+  "description": "Scarica e esporta annunci di lavoro dal portale Piemonte TU / PSLP",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:all": "electron-builder --mac --win"
+  },
+  "keywords": ["piemonte", "pslp", "lavoro", "electron"],
+  "author": "PiemonteTU Exporter",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "dependencies": {
+    "axios": "^1.6.7",
+    "csv-stringify": "^6.4.5",
+    "xlsx": "^0.18.5"
+  },
+  "build": {
+    "appId": "it.piemonte.tu.exporter",
+    "productName": "Piemonte TU Exporter",
+    "directories": {
+      "output": "dist"
+    },
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": ["dmg", "zip"]
+    },
+    "win": {
+      "target": ["nsis", "portable"]
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "renderer/**/*",
+      "node_modules/**/*"
+    ]
+  }
+}
