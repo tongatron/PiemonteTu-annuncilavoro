@@ -28,11 +28,18 @@ function flattenObject(obj, prefix = '', result = {}) {
   }
 
   if (Array.isArray(obj)) {
-    // Serializza gli array come stringa; se sono array di primitive li unisce con virgola
+    if (obj.length === 0) {
+      result[prefix] = '';
+      return result;
+    }
+    // Array di primitive → unisce con virgola in una sola cella
     if (obj.every((el) => typeof el !== 'object' || el === null)) {
       result[prefix] = obj.join(', ');
-    } else {
-      result[prefix] = JSON.stringify(obj);
+      return result;
+    }
+    // Array di oggetti → espande ogni elemento con indice [0], [1]…
+    for (let i = 0; i < obj.length; i++) {
+      flattenObject(obj[i], prefix ? `${prefix}[${i}]` : `[${i}]`, result);
     }
     return result;
   }
